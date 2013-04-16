@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/jquery-1.6.2.min.js"></script>
+    <script>
+        var log, frm, msg, socket;
+
+        var addLine = function (text) {
+            log.text(log.text() + text + "\n");
+            log.scrollTop(log[0].scrollHeight - log.height());
+        }
+        var sendline = function () {
+            var message = msg.val();
+            msg.val('');
+            socket.emit('outgoing', {name: 'Dave', 'text': message});
+            return false;
+        }
+
+        $(function () {
+            log = $('#log');
+            msg = $('#msg');
+            frm = $('#frm');
+            frm.submit(sendline);
+
+            socket = io.connect('http://localhost:8100');
+            socket.on('incoming', function (data) {
+                addLine(data);
+            });
+
+        });
+    </script>
+
+    <link rel="stylesheet" href="/css/bootstrap/css/bootstrap.min.css"/>
+</head>
+<body class="" style="background: url(/img/escheresque_ste.png);">
+
+<div class="container">
+    <h1 style="color: #eee; text-shadow: 3px 3px 4px #aaa;">ZMQ Chat</h1>
+
+    <div class="well">
+        <textarea id="log" rows="20" style="width: 98%; font-size: 1.4em; line-height: 1.3em; "></textarea>
+        <br>
+
+        <form id="frm">
+            <input id="msg" class="input-xxlarge" style="font-size: 2em; line-height: 1.1em; padding-left: 5px;"
+                   placeholder="Type Something" autofocus="autofocus"/>
+            <button class="btn btn-primary">Send</button>
+        </form>
+    </div>
+
+</div>
+
+
+</body>
+
+</html>
